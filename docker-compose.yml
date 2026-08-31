@@ -29,7 +29,8 @@ services:
       test: ["CMD-SHELL", "pg_isready -U mobiliza -d mobiliza"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      start_period: 20s
+      retries: 20
 volumes:
   mobiliza_db:
   mobiliza_uploads:
