@@ -1,0 +1,6 @@
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+export default function Login(){const router=useRouter();const [error,setError]=useState('');async function submit(e:React.FormEvent<HTMLFormElement>){e.preventDefault();const f=new FormData(e.currentTarget);const r=await fetch('/api/auth/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:f.get('email'),password:f.get('password')})});if(!r.ok){setError('E-mail ou senha inválidos');return}router.push('/admin');router.refresh()}return <main className="form-area" style={{minHeight:'100vh',display:'grid',placeItems:'center'}}><form className="contact-form" onSubmit={submit} style={{width:'min(460px,100%)'}}><div className="form-heading"><div><p>Acesso restrito</p><h2>Painel do Diretor</h2></div></div><div className="field-grid one" style={{marginTop:28}}><label>E-mail<Input name="email" type="email" required/></label><label>Senha<Input name="password" type="password" required/></label></div>{error&&<p role="alert" style={{color:'#b91c1c',fontSize:12}}>{error}</p>}<Button className="submit-button" type="submit">Entrar</Button></form></main>}
