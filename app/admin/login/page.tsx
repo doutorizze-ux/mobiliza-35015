@@ -1,6 +1,48 @@
 'use client';
+
+import Link from 'next/link';
+import { ArrowLeft, ArrowRight, LockKeyhole, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-export default function Login(){const router=useRouter();const [error,setError]=useState('');async function submit(e:React.FormEvent<HTMLFormElement>){e.preventDefault();const f=new FormData(e.currentTarget);const r=await fetch('/api/auth/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:f.get('email'),password:f.get('password')})});if(!r.ok){setError('E-mail ou senha inválidos');return}router.push('/admin');router.refresh()}return <main className="form-area" style={{minHeight:'100vh',display:'grid',placeItems:'center'}}><form className="contact-form" onSubmit={submit} style={{width:'min(460px,100%)'}}><div className="form-heading"><div><p>Acesso restrito</p><h2>Painel do Diretor</h2></div></div><div className="field-grid one" style={{marginTop:28}}><label>E-mail<Input name="email" type="email" required/></label><label>Senha<Input name="password" type="password" required/></label></div>{error&&<p role="alert" style={{color:'#b91c1c',fontSize:12}}>{error}</p>}<Button className="submit-button" type="submit">Entrar</Button></form></main>}
+
+export default function AdminLogin() {
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function submit(event: { preventDefault: () => void; currentTarget: HTMLFormElement }) {
+    event.preventDefault();
+    setError('');
+    setIsSubmitting(true);
+    const form = new FormData(event.currentTarget);
+    const response = await fetch('/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: form.get('email'), password: form.get('password') }) });
+    if (!response.ok) {
+      setError('E-mail ou senha inválidos.');
+      setIsSubmitting(false);
+      return;
+    }
+    window.location.href = '/admin';
+  }
+
+  return (
+    <main className="login-page">
+      <section className="login-brand">
+        <div className="public-brand"><span className="logo-mark">LL</span><span><strong>Mobiliza 35015</strong><small>Lívio Luciano</small></span></div>
+        <div><span className="eyebrow eyebrow-light"><LockKeyhole size={13} /> Acesso restrito</span><h1>Decisões melhores<br /><em>começam no campo.</em></h1><p>Uma visão simples e segura para acompanhar as ações das equipes e transformar registros em direção.</p></div>
+        <span className="login-note"><ShieldCheck size={14} /> Dados agregados · ambiente interno</span>
+      </section>
+      <section className="login-card-wrap">
+        <div className="login-card">
+          <span className="logo-mark">LL</span>
+          <h2>Entrar no painel</h2>
+          <p>Use as credenciais do diretor para acessar a visão consolidada da mobilização.</p>
+          <form className="login-form" onSubmit={submit}>
+            <label>E-mail administrativo<input name="email" type="email" required placeholder="diretor@exemplo.com" autoComplete="username" /></label>
+            <label>Senha<input name="password" type="password" required placeholder="Digite sua senha" autoComplete="current-password" /></label>
+            {error && <div className="login-error" role="alert">{error}</div>}
+            <button className="primary-button" disabled={isSubmitting} type="submit">{isSubmitting ? 'Entrando...' : 'Acessar painel'} <ArrowRight size={17} /></button>
+          </form>
+          <Link className="login-back" href="/"><ArrowLeft size={14} /> Voltar ao formulário</Link>
+        </div>
+      </section>
+    </main>
+  );
+}
